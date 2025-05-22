@@ -202,7 +202,8 @@ static RyanMqttError_e RyanMqttPubrecPacketHandler(RyanMqttClient_t *client)
         {
             result = RyanMqttMsgHandlerCreate(client, ackHandlerPubrec->msgHandler->topic,
                                               ackHandlerPubrec->msgHandler->topicLen,
-                                              ackHandlerPubrec->msgHandler->qos, &msgHandler);
+                                              ackHandlerPubrec->msgHandler->qos, 
+                                              ackHandlerPubrec->msgHandler->userData, &msgHandler);
             RyanMqttCheck(RyanMqttSuccessError == result, result, rlog_d);
 
             result = RyanMqttAckHandlerCreate(client, PUBCOMP, packetId, packetLen, client->config.sendBuffer, msgHandler, &ackHandler);
@@ -286,7 +287,7 @@ static RyanMqttError_e RyanMqttPublishPacketHandler(RyanMqttClient_t *client)
         result = RyanMqttAckListNodeFind(client, PUBREL, msgData.packetId, &ackHandler);
         if (RyanMqttSuccessError != result)
         {
-            result = RyanMqttMsgHandlerCreate(client, topicName.lenstring.data, topicName.lenstring.len, msgData.qos, &msgHandler);
+            result = RyanMqttMsgHandlerCreate(client, topicName.lenstring.data, topicName.lenstring.len, msgData.qos, ackHandler->msgHandler->userData, &msgHandler);
             RyanMqttCheck(RyanMqttSuccessError == result, result, rlog_d);
 
             result = RyanMqttAckHandlerCreate(client, PUBREL, msgData.packetId, packetLen, client->config.sendBuffer, msgHandler, &ackHandler);
@@ -361,7 +362,7 @@ static RyanMqttError_e RyanMqttSubackHandler(RyanMqttClient_t *client)
     // 服务端可以授予比订阅者要求的低一些的 QoS 等级。
     result = RyanMqttMsgHandlerCreate(client, ackHandler->msgHandler->topic,
                                       ackHandler->msgHandler->topicLen,
-                                      grantedQoS, &msgHandler);
+                                      grantedQoS, NULL, &msgHandler);
     RyanMqttCheck(RyanMqttSuccessError == result, result, rlog_d); // 这里创建失败了不触发回调，等待ack超时触发失败回调函数
 
     RyanMqttEventMachine(client, RyanMqttEventSubscribed, (void *)msgHandler); // mqtt回调函数

@@ -38,6 +38,7 @@ extern "C"
         RyanMqttQos_e qos; // qos等级
         RyanList_t list;   // 链表节点，用户勿动
         char *topic;       // 主题
+        void *userData;    // 用户数据
     } RyanMqttMsgHandler_t;
 
     typedef struct
@@ -125,6 +126,7 @@ extern "C"
     extern RyanMqttError_e RyanMqttSubscribe(RyanMqttClient_t *client, char *topic, RyanMqttQos_e qos);
     extern RyanMqttError_e RyanMqttUnSubscribe(RyanMqttClient_t *client, char *topic);
     extern RyanMqttError_e RyanMqttPublish(RyanMqttClient_t *client, char *topic, char *payload, uint32_t payloadLen, RyanMqttQos_e qos, RyanMqttBool_e retain);
+    extern RyanMqttError_e RyanMqttPublishEx(RyanMqttClient_t *client, char *topic, char *payload, uint32_t payloadLen, RyanMqttQos_e qos, RyanMqttBool_e retain, void *userData);
 
     extern RyanMqttState_e RyanMqttGetState(RyanMqttClient_t *client);
     extern RyanMqttError_e RyanMqttGetSubscribe(RyanMqttClient_t *client, RyanMqttMsgHandler_t *msgHandles, int32_t msgHandleSize, int32_t *subscribeNum);

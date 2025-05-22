@@ -299,10 +299,11 @@ RyanMqttBool_e RyanMqttMatchTopic(const char *topic,
  * @param topic
  * @param topicLen
  * @param qos
+ * @param userData
  * @param pMsgHandler
  * @return RyanMqttError_e
  */
-RyanMqttError_e RyanMqttMsgHandlerCreate(RyanMqttClient_t *client, char *topic, uint16_t topicLen, RyanMqttQos_e qos, RyanMqttMsgHandler_t **pMsgHandler)
+RyanMqttError_e RyanMqttMsgHandlerCreate(RyanMqttClient_t *client, char *topic, uint16_t topicLen, RyanMqttQos_e qos, void *userData, RyanMqttMsgHandler_t **pMsgHandler)
 {
     RyanMqttMsgHandler_t *msgHandler = NULL;
     RyanMqttAssert(NULL != topic);
@@ -317,6 +318,7 @@ RyanMqttError_e RyanMqttMsgHandlerCreate(RyanMqttClient_t *client, char *topic, 
     RyanListInit(&msgHandler->list);
     msgHandler->qos = qos;
     msgHandler->topicLen = topicLen;
+    msgHandler->userData = userData;
     msgHandler->topic = (char *)msgHandler + sizeof(RyanMqttMsgHandler_t);
     memcpy(msgHandler->topic, topic, topicLen); // 将packet数据保存到ack中
 

@@ -213,7 +213,7 @@ RyanMqttError_e RyanMqttSubscribe(RyanMqttClient_t *client, char *topic, RyanMqt
     topicName.lenstring.data = topic;
     topicName.lenstring.len = strlen(topic);
 
-    result = RyanMqttMsgHandlerCreate(client, topicName.lenstring.data, topicName.lenstring.len, qos, &msgHandler);
+    result = RyanMqttMsgHandlerCreate(client, topicName.lenstring.data, topicName.lenstring.len, qos, NULL, &msgHandler);
     RyanMqttCheck(RyanMqttSuccessError == result, result, rlog_d);
 
     platformMutexLock(client->config.userData, &client->sendBufLock); // 获取互斥锁
@@ -271,7 +271,7 @@ RyanMqttError_e RyanMqttUnSubscribe(RyanMqttClient_t *client, char *topic)
     result = RyanMqttMsgHandlerFind(client, topicName.lenstring.data, topicName.lenstring.len, RyanMqttFalse, &subMsgHandler);
     RyanMqttCheck(RyanMqttSuccessError == result, result, rlog_d);
 
-    result = RyanMqttMsgHandlerCreate(client, topicName.lenstring.data, topicName.lenstring.len, RyanMqttQos0, &msgHandler);
+    result = RyanMqttMsgHandlerCreate(client, topicName.lenstring.data, topicName.lenstring.len, RyanMqttQos0, NULL, &msgHandler);
     RyanMqttCheck(RyanMqttSuccessError == result, result, rlog_d);
 
     platformMutexLock(client->config.userData, &client->sendBufLock); // 获取互斥锁
@@ -302,7 +302,7 @@ RyanMqttError_e RyanMqttUnSubscribe(RyanMqttClient_t *client, char *topic)
 }
 
 /**
- * @brief 客户端向服务端发送消息
+ * @brief 客户端向服务端发送消息(带用户数据)
  *
  * @param client
  * @param topic
@@ -310,9 +310,10 @@ RyanMqttError_e RyanMqttUnSubscribe(RyanMqttClient_t *client, char *topic)
  * @param payloadLen
  * @param QOS
  * @param retain
+ * @param userData
  * @return RyanMqttError_e
  */
-RyanMqttError_e RyanMqttPublish(RyanMqttClient_t *client, char *topic, char *payload, uint32_t payloadLen, RyanMqttQos_e qos, RyanMqttBool_e retain)
+RyanMqttError_e RyanMqttPublishEx(RyanMqttClient_t *client, char *topic, char *payload, uint32_t payloadLen, RyanMqttQos_e qos, RyanMqttBool_e retain, void *userData)
 {
     RyanMqttError_e result = RyanMqttSuccessError;
     int32_t packetLen = 0;
@@ -348,7 +349,7 @@ RyanMqttError_e RyanMqttPublish(RyanMqttClient_t *client, char *topic, char *pay
     }
 
     // qos1 / qos2需要收到预期响应ack,否则数据将被重新发送
-    result = RyanMqttMsgHandlerCreate(client, topicName.lenstring.data, topicName.lenstring.len, qos, &msgHandler);
+    result = RyanMqttMsgHandlerCreate(client, topicName.lenstring.data, topicName.lenstring.len, qos, userData, &msgHandler);
     RyanMqttCheck(RyanMqttSuccessError == result, result, rlog_d);
 
     platformMutexLock(client->config.userData, &client->sendBufLock); // 获取互斥锁
@@ -377,6 +378,22 @@ RyanMqttError_e RyanMqttPublish(RyanMqttClient_t *client, char *topic, char *pay
     });
 
     return RyanMqttSuccessError;
+}
+
+/**
+ * @brief 客户端向服务端发送消息(带用户数据)
+ *
+ * @param client
+ * @param topic
+ * @param payload
+ * @param payloadLen
+ * @param QOS
+ * @param retain
+ * @return RyanMqttError_e
+ */
+RyanMqttError_e RyanMqttPublish(RyanMqttClient_t *client, char *topic, char *payload, uint32_t payloadLen, RyanMqttQos_e qos, RyanMqttBool_e retain)
+{
+    return RyanMqttPublishEx(client, topic, payload, payloadLen, qos, retain, NULL);
 }
 
 /**

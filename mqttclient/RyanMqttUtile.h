@@ -24,7 +24,7 @@ extern "C"
     extern RyanMqttError_e RyanMqttSendPacket(RyanMqttClient_t *client, char *buf, int32_t length);
     extern RyanMqttError_e RyanMqttRecvPacket(RyanMqttClient_t *client, char *buf, int32_t length);
 
-    extern RyanMqttError_e RyanMqttMsgHandlerCreate(RyanMqttClient_t *client, char *topic, uint16_t topicLen, RyanMqttQos_e qos, RyanMqttMsgHandler_t **pMsgHandler);
+    extern RyanMqttError_e RyanMqttMsgHandlerCreate(RyanMqttClient_t *client, char *topic, uint16_t topicLen, RyanMqttQos_e qos, void *userData, RyanMqttMsgHandler_t **pMsgHandler);
     extern void RyanMqttMsgHandlerDestory(RyanMqttClient_t *client, RyanMqttMsgHandler_t *msgHandler);
     extern RyanMqttError_e RyanMqttMsgHandlerFind(RyanMqttClient_t *client, char *topic, uint16_t topicLen, RyanMqttBool_e topicMatchedFlag, RyanMqttMsgHandler_t **pMsgHandler);
     extern RyanMqttError_e RyanMqttMsgHandlerAddToMsgList(RyanMqttClient_t *client, RyanMqttMsgHandler_t *msgHandler);

@@ -41,7 +41,7 @@ static void rlog_output(char *lvl, uint8_t color_n, char *fileStr, uint32_t line
     len += snprintf(dbgBuffer + len, sizeof(dbgBuffer) - len, "[%s/%s]", lvl, rlogTag);
 
     // 打印文件路径和行号
-    len += snprintf(dbgBuffer + len, sizeof(dbgBuffer) - len, " %s:%d ", fileStr, lineNum);
+    len += snprintf(dbgBuffer + len, sizeof(dbgBuffer) - len, " %s:%lu ", fileStr, lineNum);
 
     platformPrint(dbgBuffer, len);
     len = 0;
